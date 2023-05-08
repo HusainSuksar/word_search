@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Docx Word Search</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>Docx Word Search</h1>
+    <form id="upload-form">
+      <input type="file" name="files" multiple>
+      <button type="submit">Upload</button>
+    </form>
+    <div id="message"></div>
+    
+
+
+    <h2>Search Files</h2>
+    <form id="search-form">
+      <input type="text" id="query" name="query" placeholder="Search...">
+      <button type="submit">Search</button>
+    </form>
+    
+    <ul id="results-list"></ul>
+    <div id="results"></div>
+    <div id="pagination"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
