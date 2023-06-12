@@ -1,12 +1,17 @@
+// Import required modules
 const express = require('express');
 const multer = require('multer');
 const mammoth = require('mammoth');
 const fs = require('fs');
 const path = require('path');
 
+// Create an instance of the Express application
 const app = express();
+
+// Set the port number for the server
 const port = process.env.PORT || 3000;
 
+// Configure multer to handle file uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -15,11 +20,12 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   }
 });
-
 const upload = multer({ storage: storage });
 
+// Serve static files from the "public" directory
 app.use(express.static('public'));
 
+// Define the "/upload" endpoint to handle file uploads
 app.post('/upload', upload.array('files'), (req, res) => {
   const files = req.files;
   
@@ -37,6 +43,7 @@ app.post('/upload', upload.array('files'), (req, res) => {
   });
 });
 
+// Define the "/search" endpoint to handle text searches
 app.get('/search', (req, res) => {
   const query = req.query.q;
   
@@ -48,6 +55,7 @@ app.get('/search', (req, res) => {
   
   const results = [];
   
+  // Loop through all uploaded files and search for the query string
   fs.readdirSync('uploads/').forEach((fileName) => {
     if (path.extname(fileName) === '.docx') {
       const filePath = path.join('uploads/', fileName);
@@ -60,9 +68,9 @@ app.get('/search', (req, res) => {
           lines.forEach((line, index) => {
             if (line.includes(query)) {
               results.push({
-                name: fileName,
                 content: line.trim(),
-                lineNumber: index + 1
+                lineNumber: index + 1,
+                name: fileName // Add the file name to the search result object
               });
             }
           });
@@ -73,11 +81,28 @@ app.get('/search', (req, res) => {
     }
   });
   
+  // Return the search results after a delay of 5 seconds
   setTimeout(() => {
     res.json(results);
   }, 5000);
 });
 
+// Define the "/delete" endpoint to handle file deletions
+app.delete('/delete/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = `./uploads/${filename}`;
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error deleting file');
+    } else {
+      console.log('File deleted successfully');
+      res.send('File deleted successfully');
+    }
+  });
+});
+
+// Start the server and listen for incoming requests
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });

@@ -1,11 +1,12 @@
+"scripts": {
+  "start": "node app.js"
+},
 {
   "name": "docx-search-app",
   "version": "1.0.0",
   "description": "A web app for searching docx files",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
+
   "dependencies": {
     "docxtemplater": "^3.37.2",
     "express": "^4.18.2",
