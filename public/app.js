@@ -58,10 +58,11 @@ searchForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   
   const query = document.getElementById('query').value;
-  
+  loadingSpinner.style.display = 'block';
   const response = await fetch(`/search?q=${query}`);
   
   const results = await response.json();
+  loadingSpinner.style.display = 'none';
   if (!resultsList) {
     resultsList = document.getElementById('results-list');
   }
