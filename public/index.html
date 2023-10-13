@@ -1,11 +1,26 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Docx Word Search</title>
-    <link rel="stylesheet" href="style.css">
-  </head>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Docx Word Search</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
   <body>
+    <!-- Navbar Toggle Button -->
+    <button id="toggle-navbar">Show Uploaded Files</button>
+
+    <!-- Navbar Container -->
+    <div id="navbar" style="display: none;">
+      <h3>Uploaded Files</h3>
+      <ul id="uploaded-files-list"></ul>
+    </div>
+
+    <!-- ... rest of your code ... -->
+
     <h1>Docx Word Search</h1>
     <div id="loading-spinner"></div>
     <form id="upload-form">
@@ -13,7 +28,7 @@
       <button type="submit">Upload</button>
     </form>
     <div id="message"></div>
-    
+
     <h2 style="text-align: center;">Uploaded Files</h2>
     <ul id="file-list"></ul>
 
@@ -22,15 +37,19 @@
       <input type="text" id="query" name="query" placeholder="Search...">
       <button type="submit">Search</button>
     </form>
-    
-    <ul id="results-list"></ul>
-    
-    <div id="pagination">
-    </div>
-    
+    <div class="loader" id="loading-spinner" style="display: none;"></div>
 
-   
+    <ul id="results-list"></ul>
+
+    <div id="pagination-wrapper">
+      <div id="pagination"></div>
+  </div>
+  
+
+
+
 
     <script src="app.js"></script>
   </body>
+
 </html>
