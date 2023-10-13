@@ -1,7 +1,10 @@
 @font-face {
-  font-family: 'Al-Kanz';
-  src: url('/Users/husainsuksar/Desktop/python/searchapp/fonts/Al-Kanz fonts.ttf') format('truetype');
+  font-family: 'AlKanz';
+  src: url('fonts/al-kanz fonts.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
+
 body {
   background-image: url('pattern.jpeg');
   background-repeat: repeat;
@@ -47,7 +50,7 @@ button[type="submit"]:hover {
   padding: 0;
   margin: 0;
   text-align: right; /* Align search results to the right */
-  font-family: 'Al-Kanz', sans-serif;
+  font-family: 'AlKanz', sans-serif;
   font-size: 21px;
 }
 
@@ -107,4 +110,86 @@ button[type="submit"]:hover {
 #sort-select option {
   background-color: #fff;
   color: #333;
+}
+
+/* Style the file list */
+#file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Style file list items */
+#file-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid #007bff;
+  margin-bottom: 10px;
+  background-color: #f9f9f9a6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s;
+}
+
+/* Change list item shadow on hover */
+#file-list li:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Style the file name#file-list li span {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-right: 10px;
+}
+
+/* Style the delete button */
+#file-list li button {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Change delete button color on hover */
+#file-list li button:hover {
+  background-color: #d32f2f;
+}
+#sidebar {
+  width: 200px;
+  height: 100%;
+  background-color: #f2f2f2;
+  /* Add other desired styles */
+}
+
+#file-names {
+  list-style: none;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+#file-names li {
+  padding: 10px;
+  margin-bottom: 5px;
+  background-color: #fff;
+  /* Add other desired styles */
+}
+.loader {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;  /* Center the loader */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
