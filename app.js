@@ -44,47 +44,59 @@ app.post('/upload', upload.array('files'), (req, res) => {
 });
 
 // Define the "/search" endpoint to handle text searches
+// Define the "/search" endpoint to handle text searches
 app.get('/search', (req, res) => {
   const query = req.query.q;
-  
+
   if (!query) {
-    const error = new Error('Please provide a search query');
-    error.httpStatusCode = 400;
-    return next(error);
+      const error = new Error('Please provide a search query');
+      error.httpStatusCode = 400;
+      return next(error);
   }
-  
-  const results = [];
-  
-  // Loop through all uploaded files and search for the query string
-  fs.readdirSync('uploads/').forEach((fileName) => {
-    if (path.extname(fileName) === '.docx') {
-      const filePath = path.join('uploads/', fileName);
-      
-      mammoth.extractRawText({ path: filePath })
-        .then((result) => {
-          const content = result.value;
-          const lines = content.split('\n');
-          
-          lines.forEach((line, index) => {
-            if (line.includes(query)) {
-              results.push({
-                content: line.trim(),
-                lineNumber: index + 1,
-                name: fileName // Add the file name to the search result object
-              });
-            }
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  });
-  
-  // Return the search results after a delay of 5 seconds
-  setTimeout(() => {
-    res.json(results);
-  }, 5000);
+
+  const searchFile = (fileName) => {
+      return new Promise((resolve, reject) => {
+          if (path.extname(fileName) === '.docx') {
+              const filePath = path.join('uploads/', fileName);
+
+              mammoth.extractRawText({ path: filePath })
+                  .then((result) => {
+                      const content = result.value;
+                      const lines = content.split('\n');
+                      const fileResults = [];
+
+                      lines.forEach((line, index) => {
+                          if (line.includes(query)) {
+                              fileResults.push({
+                                  content: line.trim(),
+                                  lineNumber: index + 1,
+                                  name: fileName
+                              });
+                          }
+                      });
+
+                      resolve(fileResults);
+                  })
+                  .catch(reject);
+          } else {
+              resolve([]);
+          }
+      });
+  };
+
+  fs.promises.readdir('uploads/')
+      .then(files => {
+          return Promise.all(files.map(searchFile));
+      })
+      .then(resultsArrays => {
+          // Flatten the results arrays into a single array
+          const results = [].concat(...resultsArrays);
+          res.json(results);
+      })
+      .catch(error => {
+          console.error(error);
+          res.status(500).send('Error processing files');
+      });
 });
 
 // Define the "/delete" endpoint to handle file deletions
@@ -100,6 +112,32 @@ app.delete('/delete/:filename', (req, res) => {
       res.send('File deleted successfully');
     }
   });
+});
+
+// Endpoint to get the list of uploaded files
+app.get('/uploaded-files', (req, res) => {
+    const uploadsDir = path.join(__dirname, 'uploads');
+    fs.readdir(uploadsDir, (err, files) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Error reading uploaded files');
+            return;
+        }
+        res.json(files);
+    });
+});
+
+// Endpoint to delete a specific file
+app.delete('/delete/:filename', (req, res) => {
+    const filePath = path.join(__dirname, 'uploads', req.params.filename);
+    fs.unlink(filePath, (err) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Error deleting file');
+            return;
+        }
+        res.send('File deleted successfully');
+    });
 });
 
 // Start the server and listen for incoming requests
