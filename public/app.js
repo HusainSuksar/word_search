@@ -2,193 +2,189 @@ const uploadForm = document.getElementById('upload-form');
 const message = document.getElementById('message');
 const fileList = document.getElementById('file-list');
 const loadingSpinner = document.getElementById('loading-spinner');
-
-uploadForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  
-  const formData = new FormData(uploadForm);
-  
-  const response = await fetch('/upload', {
-    method: 'POST',
-    body: formData
-  });
-  
-  const data = await response.json();
-  
-  message.textContent = data.message;
-  
-  // Add uploaded files to the list
-  if (data.fileNames) {
-    data.fileNames.forEach((fileName) => {
-      const listItem = document.createElement('li');
-      const fileNameSpan = document.createElement('span');
-      fileNameSpan.textContent = fileName;
-      listItem.appendChild(fileNameSpan);
-      const deleteButton = document.createElement('button');
-      deleteButton.textContent = 'Delete';
-      deleteButton.addEventListener('click', async () => {
-        try {
-          loadingSpinner.style.display = 'block';
-          const response = await fetch(`/delete/${fileName}`, {
-            method: 'DELETE'
-          });
-          const message = await response.text();
-          console.log(message);
-          listItem.remove();
-        } catch (error) {
-          console.error(error);
-          alert('Error deleting file');
-        } finally {
-          loadingSpinner.style.display = 'none';
-        }
-      });
-      listItem.appendChild(deleteButton);
-      fileList.appendChild(listItem);
-    });
-  }
-});
-
-
 const searchForm = document.getElementById('search-form');
 let resultsList = document.getElementById('results-list');
 let pagination = document.getElementById('pagination');
 
+uploadForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    
+    const formData = new FormData(uploadForm);
+    
+    const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+    });
+    
+    const data = await response.json();
+    
+    message.textContent = data.message;
+    
+    // Add uploaded files to the list
+    if (data.fileNames) {
+        data.fileNames.forEach((fileName) => {
+            const listItem = document.createElement('li');
+            const fileNameSpan = document.createElement('span');
+            fileNameSpan.textContent = fileName;
+            listItem.appendChild(fileNameSpan);
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', async () => {
+                try {
+                    loadingSpinner.style.display = 'block';
+                    const response = await fetch(`/delete/${fileName}`, {
+                        method: 'DELETE'
+                    });
+                    const message = await response.text();
+                    console.log(message);
+                    listItem.remove();
+                } catch (error) {
+                    console.error(error);
+                    alert('Error deleting file');
+                } finally {
+                    loadingSpinner.style.display = 'none';
+                }
+            });
+            listItem.appendChild(deleteButton);
+            fileList.appendChild(listItem);
+        });
+    }
+});
+
+const MAX_BUTTONS_DISPLAYED = 3; // Number of pagination buttons to display before using "..."
 
 searchForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-  
-  const query = document.getElementById('query').value;
-  loadingSpinner.style.display = 'block';
-  const response = await fetch(`/search?q=${query}`);
-  
-  const results = await response.json();
-  loadingSpinner.style.display = 'none';
-  if (!resultsList) {
-    resultsList = document.getElementById('results-list');
-  }
-  
-  if (!pagination) {
-    pagination = document.getElementById('pagination');
-  }
-  
-  resultsList.innerHTML = '';
-  pagination.innerHTML = '';
-
-  const PAGE_SIZE = 10; // Number of results to display per page
-  let currentPage = 1; // Current page number
-
-  const startIndex = (currentPage - 1) * PAGE_SIZE;
-  const endIndex = startIndex + PAGE_SIZE;
-  const paginatedResults = results.slice(startIndex, endIndex);
-
-  paginatedResults.forEach((result) => {
-    const listItem = document.createElement('li');
+    event.preventDefault();
     
-    const fileNameLine = document.createElement('div');
-    fileNameLine.style.fontWeight = 'bold';
-
-    const fileName = document.createElement('span');
-    fileName.textContent = result.name; 
-    fileNameLine.appendChild(fileName);
-
-    const lineNumber = document.createElement('span');
-    lineNumber.textContent = `Line ${result.lineNumber}: `;
-    fileNameLine.appendChild(lineNumber);
-
-    listItem.appendChild(fileNameLine);
-
-    const content = document.createElement('span');
-    content.textContent = result.content;
-    listItem.appendChild(content);
-
+    const query = document.getElementById('query').value;
+    loadingSpinner.style.display = 'block';
+    const response = await fetch(`/search?q=${query}`);
     
-    const highlightedContent = document.createElement('span');
-    highlightedContent.innerHTML = content.innerHTML.replace(new RegExp(query, 'gi'), '<span class="highlight">$&</span>');
-    listItem.replaceChild(highlightedContent, content);
+    const results = await response.json();
+    loadingSpinner.style.display = 'none';
     
-    resultsList.appendChild(listItem);
-  });
+    resultsList.innerHTML = '';
+    pagination.innerHTML = '';
 
-  const numPages = Math.ceil(results.length / PAGE_SIZE);
-  const numButtonRows = Math.ceil(numPages / 10);
+    const PAGE_SIZE = 10; // Number of results to display per page
+    let currentPage = 1; // Current page number
+    const numPages = Math.ceil(results.length / PAGE_SIZE); // Calculate the total number of pages
 
-  for (let i = 1; i <= numButtonRows; i++) {
-  const buttonRow = document.createElement('div');
-  buttonRow.classList.add('button-row');
-  pagination.appendChild(buttonRow);
 
-  for (let j = (i - 1) * 10 + 1; j <= Math.min(i * 10, numPages); j++) {
-    const button = document.createElement('button');
-    button.textContent = j;
-    if (j === currentPage) {
-      button.classList.add('active');
+    function renderPaginationButtons(start, end) {
+        pagination.innerHTML = ''; // Clear existing buttons
+
+        for (let i = start; i <= end; i++) {
+            const button = document.createElement('button');
+            button.textContent = i;
+            if (i === currentPage) {
+                button.classList.add('active');
+            }
+            button.addEventListener('click', () => {
+                currentPage = i;
+                updateResults();
+                updatePaginationButtons();
+            });
+            pagination.appendChild(button);
+        }
+
+        if (end < numPages) {
+            const dots = document.createElement('span');
+            dots.textContent = '...';
+            pagination.appendChild(dots);
+
+            const lastPageButton = document.createElement('button');
+            lastPageButton.textContent = numPages;
+            lastPageButton.addEventListener('click', () => {
+                currentPage = numPages;
+                updateResults();
+                updatePaginationButtons();
+            });
+            pagination.appendChild(lastPageButton);
+
+            const nextButton = document.createElement('button');
+            nextButton.textContent = '>';
+            nextButton.addEventListener('click', () => {
+                renderPaginationButtons(start + MAX_BUTTONS_DISPLAYED, Math.min(end + MAX_BUTTONS_DISPLAYED, numPages - 1));
+            });
+            pagination.appendChild(nextButton);
+        }
     }
-    button.addEventListener('click', async () => {
-      currentPage = j;
+
+    function updateResults() {
       const startIndex = (currentPage - 1) * PAGE_SIZE;
       const endIndex = startIndex + PAGE_SIZE;
       const paginatedResults = results.slice(startIndex, endIndex);
       resultsList.innerHTML = '';
       paginatedResults.forEach((result) => {
-        const listItem = document.createElement('li');
-        
-        const fileName = document.createElement('span');
-        fileName.textContent = result.name;
-        listItem.appendChild(fileName);
-        
-        const lineNumber = document.createElement('span');
-        lineNumber.textContent = `Line ${result.lineNumber}: `;
-        listItem.appendChild(lineNumber);
-        
-        const content = document.createElement('span');
-        content.textContent = result.content;
-        listItem.appendChild(content);
-        
-        const highlightedContent = document.createElement('span');
-        highlightedContent.innerHTML = content.innerHTML.replace(new RegExp(query, 'gi'), '<span class="highlight">$&</span>');
-        listItem.replaceChild(highlightedContent, content);
-        
-        resultsList.appendChild(listItem);
+          const listItem = document.createElement('li');
+          
+          const fileName = document.createElement('span');
+          fileName.textContent = result.name;
+          listItem.appendChild(fileName);
+          
+          const lineNumber = document.createElement('span');
+          lineNumber.textContent = `Line ${result.lineNumber}: `;
+          listItem.appendChild(lineNumber);
+          
+          const content = document.createElement('span');
+          content.textContent = result.content;
+          listItem.appendChild(content);
+          
+          const highlightedContent = document.createElement('span');
+          highlightedContent.innerHTML = content.innerHTML.replace(new RegExp(query, 'gi'), '<span class="highlight">$&</span>');
+          listItem.replaceChild(highlightedContent, content);
+          
+          resultsList.appendChild(listItem);
       });
-      updatePaginationButtons();
-    });
-    buttonRow.appendChild(button);
   }
+  
+
+    function updatePaginationButtons() {
+        const start = Math.max(1, currentPage - Math.floor(MAX_BUTTONS_DISPLAYED / 2));
+        const end = Math.min(start + MAX_BUTTONS_DISPLAYED - 1, numPages - 1);
+        renderPaginationButtons(start, end);
+    }
+    updateResults();
+    updatePaginationButtons();
+});
+
+// Toggle Navbar
+document.getElementById('toggle-navbar').addEventListener('click', () => {
+    const navbar = document.getElementById('navbar');
+    if (navbar.style.display === 'none') {
+        navbar.style.display = 'block';
+    } else {
+        navbar.style.display = 'none';
+    }
+});
+
+// Fetch the list of uploaded files and display them in the navbar
+async function fetchUploadedFiles() {
+    const response = await fetch('/uploaded-files');
+    const files = await response.json();
+    const filesList = document.getElementById('uploaded-files-list');
+    filesList.innerHTML = ''; // Clear the list
+    files.forEach(file => {
+        const listItem = document.createElement('li');
+        listItem.textContent = file;
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.className = 'delete-file-btn';
+        deleteBtn.addEventListener('click', async () => {
+            const deleteResponse = await fetch(`/delete/${file}`, {
+                method: 'DELETE'
+            });
+            if (deleteResponse.ok) {
+                listItem.remove();
+            } else {
+                alert('Error deleting file');
+            }
+        });
+        listItem.appendChild(deleteBtn);
+        filesList.appendChild(listItem);
+    });
 }
 
-  function updatePaginationButtons() {
-    const buttons = pagination.querySelectorAll('button');
-    buttons.forEach((button, index) => {
-      if (index === currentPage - 1) {
-        button.classList.add('active');
-      } else {
-        button.classList.remove('active');
-      }
-    });
-  }
-
-  updatePaginationButtons();
-});
-
-const deleteButtons = document.querySelectorAll('.delete-button');
-
-deleteButtons.forEach((button) => {
-  button.addEventListener('click', (event) => {
-    const filename = event.target.dataset.filename;
-    fetch(`/delete/${filename}`, {
-      method: 'DELETE',
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log('File deleted successfully');
-          // Reload the page to update the file list
-          location.reload();
-        } else {
-          console.error('Error deleting file');
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  });
-});
+// Call the function to fetch and display the uploaded files
+fetchUploadedFiles();
