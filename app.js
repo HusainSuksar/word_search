@@ -4,7 +4,7 @@ const multer = require('multer');
 const mammoth = require('mammoth');
 const fs = require('fs');
 const path = require('path');
-
+const pdf = require('pdf-parse');
 // Create an instance of the Express application
 const app = express();
 
@@ -54,17 +54,18 @@ app.get('/search', (req, res) => {
       return next(error);
   }
 
+
   const searchFile = (fileName) => {
       return new Promise((resolve, reject) => {
+          const filePath = path.join('uploads/', fileName);
+  
           if (path.extname(fileName) === '.docx') {
-              const filePath = path.join('uploads/', fileName);
-
               mammoth.extractRawText({ path: filePath })
                   .then((result) => {
                       const content = result.value;
                       const lines = content.split('\n');
                       const fileResults = [];
-
+  
                       lines.forEach((line, index) => {
                           if (line.includes(query)) {
                               fileResults.push({
@@ -74,16 +75,35 @@ app.get('/search', (req, res) => {
                               });
                           }
                       });
-
+  
                       resolve(fileResults);
                   })
                   .catch(reject);
+          } else if (path.extname(fileName) === '.pdf') {
+              let dataBuffer = fs.readFileSync(filePath);
+              pdf(dataBuffer).then(function(data) {
+                  const content = data.text;
+                  const lines = content.split('\n');
+                  const fileResults = [];
+  
+                  lines.forEach((line, index) => {
+                      if (line.includes(query)) {
+                          fileResults.push({
+                              content: line.trim(),
+                              lineNumber: index + 1,
+                              name: fileName
+                          });
+                      }
+                  });
+  
+                  resolve(fileResults);
+              }).catch(reject);
           } else {
               resolve([]);
           }
       });
   };
-
+  
   fs.promises.readdir('uploads/')
       .then(files => {
           return Promise.all(files.map(searchFile));
