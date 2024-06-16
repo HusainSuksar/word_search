@@ -112,32 +112,40 @@ searchForm.addEventListener('submit', async (event) => {
     }
 
     function updateResults() {
-      const startIndex = (currentPage - 1) * PAGE_SIZE;
-      const endIndex = startIndex + PAGE_SIZE;
-      const paginatedResults = results.slice(startIndex, endIndex);
-      resultsList.innerHTML = '';
-      paginatedResults.forEach((result) => {
-          const listItem = document.createElement('li');
-          
-          const fileName = document.createElement('span');
-          fileName.textContent = result.name;
-          listItem.appendChild(fileName);
-          
-          const lineNumber = document.createElement('span');
-          lineNumber.textContent = `Line ${result.lineNumber}: `;
-          listItem.appendChild(lineNumber);
-          
-          const content = document.createElement('span');
-          content.textContent = result.content;
-          listItem.appendChild(content);
-          
-          const highlightedContent = document.createElement('span');
-          highlightedContent.innerHTML = content.innerHTML.replace(new RegExp(query, 'gi'), '<span class="highlight">$&</span>');
-          listItem.replaceChild(highlightedContent, content);
-          
-          resultsList.appendChild(listItem);
-      });
-  }
+        const startIndex = (currentPage - 1) * PAGE_SIZE;
+        const endIndex = startIndex + PAGE_SIZE;
+        const paginatedResults = results.slice(startIndex, endIndex);
+        resultsList.innerHTML = ''; // Clear existing results
+    
+        paginatedResults.forEach((result) => {
+            const listItem = document.createElement('li');
+            listItem.classList.add('search-result-item');
+    
+            const fileName = document.createElement('div');
+            fileName.classList.add('file-name');
+            fileName.textContent = `File: ${result.name}`;
+            listItem.appendChild(fileName);
+    
+            const lineNumber = document.createElement('div');
+            lineNumber.classList.add('line-number');
+            lineNumber.textContent = `Line ${result.lineNumber}:`;
+            listItem.appendChild(lineNumber);
+    
+            const content = document.createElement('div');
+            content.classList.add('content');
+            content.textContent = result.content;
+            listItem.appendChild(content);
+    
+            // Highlight search query in the content
+            const highlightedContent = document.createElement('div');
+            highlightedContent.classList.add('highlighted-content');
+            highlightedContent.innerHTML = result.content.replace(new RegExp(query, 'gi'), match => `<span class="highlight">${match}</span>`);
+            listItem.appendChild(highlightedContent);
+    
+            resultsList.appendChild(listItem);
+        });
+    }
+    
   
 
     function updatePaginationButtons() {
