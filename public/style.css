@@ -1,3 +1,4 @@
+/* Font Face */
 @font-face {
   font-family: 'AlKanz';
   src: url('fonts/al-kanz fonts.ttf') format('truetype');
@@ -5,17 +6,23 @@
   font-style: normal;
 }
 
+/* Body Styles */
 body {
   background-image: url('pattern.jpeg');
   background-repeat: repeat;
+  font-family: 'AlKanz', sans-serif;
+  font-size: 16px; /* Adjust font size as needed */
+  color: #333; /* Main text color */
 }
 
-
+/* Heading Styles */
 h1 {
   text-align: center;
   margin-top: 50px;
+  font-size: 28px;
 }
 
+/* Form Styles */
 form {
   display: flex;
   flex-direction: column;
@@ -45,32 +52,48 @@ button[type="submit"]:hover {
   background-color: #3e8e41;
 }
 
+/* Results List Styles */
 #results-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  text-align: right; /* Align search results to the right */
-  font-family: 'AlKanz', sans-serif;
-  font-size: 21px;
 }
 
 #results-list li {
+  border: 1px solid #ddd;
+  background-color: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#results-list .file-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #007bff; /* File name color */
+  margin-bottom: 5px;
+}
+
+#results-list .line-number {
+  color: #888;
+  font-size: 0.9em;
+  margin-bottom: 5px;
+}
+
+#results-list .content {
   margin-bottom: 10px;
 }
 
-#results-list span {
-  display: inline-block;
-  margin-right: 10px;
-  ;
+#results-list .highlighted-content {
+  background-color: #ffffcc; /* Highlighted text background color */
+  padding: 3px;
+  border-radius: 3px;
 }
 
 #results-list .highlight {
-  background-color: yellow;
+  background-color: yellow; /* Highlighted text color */
 }
 
-.highlight {
-  background-color: yellow;
-}
 /* Pagination Wrapper */
 #pagination-wrapper {
   display: flex;
@@ -104,103 +127,7 @@ button[type="submit"]:hover {
   background-color: #ff5733;
 }
 
-#sort-select {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  color: #333;
-  font-size: 16px;
-  margin-bottom: 10px;
-  padding: 5px 10px;
-  width: 200px;
-}
-
-#sort-select option {
-  background-color: #fff;
-  color: #333;
-}
-
-/* Style the file list */
-#file-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-/* Style file list items */
-#file-list li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  border: 1px solid #007bff;
-  margin-bottom: 10px;
-  background-color: #f9f9f9a6;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s;
-}
-
-/* Change list item shadow on hover */
-#file-list li:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Style the file name#file-list li span {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-  margin-right: 10px;
-}
-
-/* Style the delete button */
-#file-list li button {
-  background-color: #f44336;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-/* Change delete button color on hover */
-#file-list li button:hover {
-  background-color: #d32f2f;
-}
-#sidebar {
-  width: 200px;
-  height: 100%;
-  background-color: #f2f2f2;
-  /* Add other desired styles */
-}
-
-#file-names {
-  list-style: none;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-}
-
-#file-names li {
-  padding: 10px;
-  margin-bottom: 5px;
-  background-color: #fff;
-  /* Add other desired styles */
-}
-.loader {
-  border: 8px solid #f3f3f3;
-  border-top: 8px solid #3498db;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;  /* Center the loader */
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-/* Navbar Toggle Button */
+/* Toggle Navbar Button */
 #toggle-navbar {
   background-color: #007bff;
   color: #fff;
@@ -213,38 +140,4 @@ button[type="submit"]:hover {
 
 #toggle-navbar:hover {
   background-color: #0056b3;
-}
-
-/* Navbar Styles */
-#navbar {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 15px;
-  width: 250px;
-  position: fixed;
-  top: 60px;
-  right: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-  max-height: 400px;
-}
-
-#uploaded-files-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
-}
-
-.delete-file-btn {
-  background-color: #f44336;
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.delete-file-btn:hover {
-  background-color: #d32f2f;
 }
